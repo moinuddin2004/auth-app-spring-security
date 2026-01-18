@@ -1,7 +1,9 @@
 package com.auth_app.demo.controllers;
 
+import com.auth_app.demo.common.ApiResponse;
 import com.auth_app.demo.dtos.UserDto;
 import com.auth_app.demo.dtos.UserResDto;
+import com.auth_app.demo.exceptions.EntityNotFoundException;
 import com.auth_app.demo.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,52 +22,60 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserResDto> createUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<UserResDto>> createUser(@Valid @RequestBody UserDto userDto) {
         UserResDto createdUser = userService.createUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created(createdUser, "User created successfully"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResDto> getUserById(@PathVariable UUID id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<UserResDto>> getUserById(@PathVariable UUID id) {
+        UserResDto user = userService.getUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User", id));
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserResDto> getUserByEmail(@PathVariable String email) {
-        return userService.getUserByEmail(email)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<UserResDto>> getUserByEmail(@PathVariable String email) {
+        UserResDto user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User", email));
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResDto>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserResDto>>> getAllUsers() {
         List<UserResDto> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(ApiResponse.success(users, "Users retrieved successfully"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResDto> updateUser(@PathVariable UUID id, @Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<ApiResponse<UserResDto>> updateUser(
+            @PathVariable UUID id,
+            @Valid @RequestBody UserDto userDto) {
         UserResDto updatedUser = userService.updateUser(id, userDto);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser, "User updated successfully"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success(null, "User deleted successfully"));
     }
 
     @PostMapping("/{id}/roles/{roleName}")
-    public ResponseEntity<UserResDto> addRoleToUser(@PathVariable UUID id, @PathVariable String roleName) {
+    public ResponseEntity<ApiResponse<UserResDto>> addRoleToUser(
+            @PathVariable UUID id,
+            @PathVariable String roleName) {
         UserResDto updatedUser = userService.addRoleToUser(id, roleName);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser, "Role added successfully"));
     }
 
     @DeleteMapping("/{id}/roles/{roleName}")
-    public ResponseEntity<UserResDto> removeRoleFromUser(@PathVariable UUID id, @PathVariable String roleName) {
+    public ResponseEntity<ApiResponse<UserResDto>> removeRoleFromUser(
+            @PathVariable UUID id,
+            @PathVariable String roleName) {
         UserResDto updatedUser = userService.removeRoleFromUser(id, roleName);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(ApiResponse.success(updatedUser, "Role removed successfully"));
     }
 }
+
