@@ -1,0 +1,41 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth-app
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+#    hikari:
+#      maximum-pool-size: 10
+#      minimum-idle: 2
+#      idle-timeout: 30000
+#      connection-timeout: 20000
+#      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update   # validate | update | create | create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Error handling configuration
+app:
+  errors:
+    include-stacktrace: true  # Set to false in production
+    use-problem-details: false  # Set to true for RFC 7807 format
+    problem-type-base-uri: https://api.example.com/problems
+
+# Logging configuration with requestId
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{requestId:-N/A}] %-5level %logger{36} - %msg%n"
+  level:
+    root: INFO
+    com.auth_app.demo: DEBUG
+    org.springframework.security: DEBUG

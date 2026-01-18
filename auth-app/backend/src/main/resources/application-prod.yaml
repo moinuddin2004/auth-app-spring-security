@@ -1,0 +1,17 @@
+
+server:
+  port: 8083
+
+# Production Profile
+app:
+  errors:
+    include-stacktrace: false
+    use-problem-details: false
+    problem-type-base-uri: https://api.yourapp.com/problems
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{requestId:-N/A}] [%X{traceId:-}] %-5level %logger{36} - %msg%n"
+  level:
+    root: WARN
+    com.auth_app.demo: INFO
