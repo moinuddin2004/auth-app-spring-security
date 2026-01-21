@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-//    private final PasswordEncoder passwordEncoder;
+   private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResDto createUser(UserDto userDto) {
@@ -34,8 +34,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .name(userDto.getName())
                 .email(userDto.getEmail())
-//                .password(passwordEncoder.encode(userDto.getPassword()))
-                .password(userDto.getPassword())
+                .password(passwordEncoder.encode(userDto.getPassword()))
                 .build();
 
 
@@ -93,8 +92,7 @@ public class UserServiceImpl implements UserService {
 
         // Only update password if provided
         if (userDto.getPassword() != null && !userDto.getPassword().isBlank()) {
-//            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-            user.setPassword(userDto.getPassword());
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
 
         // Update roles if provided

@@ -35,6 +35,10 @@ public class User {
     @Column(name = "email_verified")
     private Boolean emailVerified = false;
 
+    @Column(name = "is_active")
+    private Boolean isActive = true;
+
+
     @Enumerated(EnumType.STRING)
     @Column(name = "provider")
     private AuthProvider provider = AuthProvider.LOCAL;
